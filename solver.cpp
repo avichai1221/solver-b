@@ -13,15 +13,15 @@ namespace solver {
     RealVariable::RealVariable()
     {
         MP=0.0;
-        coefficient=0.0;
-        power=0;
+        coefficient=1.0;
+        power=1;
         pow2= nullptr;
     }
     RealVariable::RealVariable(double realNum)
     {
         this->MP=realNum;
-        coefficient=0.0;
-        power=0;
+        coefficient=1.0;
+        power=1;
         pow2= nullptr;
     }
     RealVariable::RealVariable(RealVariable const &other)
@@ -34,9 +34,28 @@ namespace solver {
 
 ///////////////////////////////////////////////////////////////////////
 
-    double solve(RealVariable x){
-//if(x.power==2)
-        return x.MP;
+    double solve(RealVariable x)
+    {
+        if(x.pow2== nullptr) //אין חזקת 2
+        {
+            if (x.coefficient == 0 && x.MP != 0) throw invalid_argument("wrong");
+            else if ((x.coefficient == 0 && x.MP == 0)||(x.coefficient == 1 && x.MP == 0)) return 0;
+            else if (x.coefficient == 1 && x.MP != 0) return -x.MP;
+            else return (-x.MP)/x.coefficient;
+
+        }else if( (x.coefficient==0&&x.pow2!= nullptr))
+        {
+            if(x.MP<0)
+            return sqrt(-x.MP);
+            throw invalid_argument("There is no real solution");
+        }
+
+        else{//נוסחת שורשים
+            double sq=x.coefficient*x.coefficient-4*x.pow2->coefficient*x.MP;
+            if (sq<0) throw invalid_argument("There is no real solution");
+            return (-x.coefficient+sqrt(sq))/2*x.pow2->coefficient;
+        }
+
     }
 ///////////////////////////////////////////////////////////////////////
 
@@ -51,7 +70,7 @@ namespace solver {
             ans.power=c2.power;
             ans.MP=c1.MP+c2.MP;
             ans.coefficient=c1.coefficient+c2.coefficient;
-            if (c1.pow2!=nullptr &&c2.pow2!= nullptr) //בדיקה אם קיים חזקת 2
+            if (c1.pow2!=nullptr &&c2.pow2!= nullptr)
             {
                 RealVariable ans2;
                 ans2.power=c2.pow2->power;
@@ -220,23 +239,53 @@ namespace solver {
         return ans;
     }
 
-
-
-    
-    RealVariable operator==(const RealVariable &c1, const RealVariable &c2) {
-        RealVariable a;
-        //if(c1.realNum==c2.realNum) return
-       // a.realNum=c1.realNum+c2.realNum;
-        return a;
+    RealVariable operator*(const double c2,const RealVariable &c1)
+    {
+        return operator*(c1,c2);
     }
 
-    RealVariable operator^(const RealVariable &c1, const double c2) {
-        return RealVariable();
+    RealVariable operator*(const RealVariable &c1, const double c2)
+    {
+        RealVariable ans2;
+        ans2.coefficient=c1.coefficient*c2;
+        ans2.power=c1.power;
+        ans2.MP=c1.MP*c2;
+        if(c1.pow2!= nullptr)
+        {
+            RealVariable ans(*c1.pow2);
+            ans.pow2->coefficient=c1.pow2->coefficient*c2;
+            ans2.pow2=&ans;
+        }
+        return ans2;
+
     }
 
-    RealVariable operator*(const double c2,const RealVariable &c1) {
-        return RealVariable();
+
+
+
+
+    RealVariable operator^(const RealVariable &c1, const int c2)
+    {
+        if(c2>2||c2<0) throw ("can not be less then 0 or big from 2");
+        if(c1.pow2!= nullptr&&c2>1) throw ("power can not be big from 2");
+
+        RealVariable ans,ans2;
+        double help=1;//חישוב אמצע מקדם X
+
+
+    ans2.power = 2;
+    ans2.coefficient = pow(c1.coefficient, c2);
+    ans.pow2 = &ans2;
+
+        help = c1.coefficient * c1.MP * 2;
+
+        ans.power = c1.power;
+        ans.MP = pow(c1.MP, c2);
+        ans.coefficient = help;
+return ans;
     }
+
+
 
     RealVariable operator/(const RealVariable &c1, const RealVariable &c2) {
         return RealVariable();
@@ -244,30 +293,38 @@ namespace solver {
 
 
 
-    RealVariable operator*(const RealVariable &c1, const double c2) {
-        return RealVariable();
-    }
+
 
     RealVariable operator*(const RealVariable &c1, const RealVariable &c2) {
-        RealVariable ans;
-
-        if(c1.power==c2.power)
+        RealVariable ans,ans2;
+        double help;//מקדם X
+if((c1.pow2!= nullptr&&c2.pow2!= nullptr)||(c1.pow2!= nullptr&&c2.power==1)||(c2.pow2!= nullptr&&c1.power==1))throw invalid_argument("can not do ^>2");
+        if(c1.power==c2.power==1)
         {
+            ans2.power=2;
+            ans2.coefficient=c1.coefficient*c2.coefficient;
+
+            help=c1.coefficient*c2.MP+c2.coefficient*c1.MP;
+
             ans.power=c2.power;
-            ans.MP=c1.MP-c2.MP;
-            ans.coefficient=c1.coefficient-c2.coefficient;
-        } else{
-            cout<<"need to solve this one day";
+            ans.MP=c1.MP*c2.MP;
+            ans.coefficient=help;
+            ans.pow2=&ans2;
         }
     }
 
+    RealVariable operator==(const RealVariable &c1, const double c2)
+    {
+
+       return operator-(c1,c2);
+    }
+
+    RealVariable operator==(const RealVariable &c1, const RealVariable &c2)
+    {
+        return operator-(c1,c2);
+    }
 
 
-
-//    RealVariable operator==(const RealVariable &c1, const int c2) {
-//        return RealVariable();
-//    }
-//
 
 ///////////////////////////////////////////////////////////////////////
 
