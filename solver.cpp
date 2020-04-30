@@ -220,7 +220,15 @@ namespace solver {
     }
     RealVariable operator-(const double c1, const RealVariable &c2)
     {
-        return operator-(c2, c1);
+        RealVariable ans(c2);
+        if(c2.pow2!= nullptr)
+        {
+           ans.pow2->coefficient=-c2.pow2->coefficient;
+        }
+
+        ans.coefficient=-c2.coefficient;
+        ans.MP=-c2.MP+c1;
+        return ans;
     }
     RealVariable operator+(const double c1, const RealVariable &c2)
     {
@@ -238,12 +246,10 @@ namespace solver {
         ans.MP=c1.MP-c2;
         return ans;
     }
-
     RealVariable operator*(const double c2,const RealVariable &c1)
     {
         return operator*(c1,c2);
     }
-
     RealVariable operator*(const RealVariable &c1, const double c2)
     {
         RealVariable ans2;
@@ -259,11 +265,6 @@ namespace solver {
         return ans2;
 
     }
-
-
-
-
-
     RealVariable operator^(const RealVariable &c1, const int c2)
     {
         if(c2>2||c2<0) throw ("can not be less then 0 or big from 2");
@@ -284,17 +285,14 @@ namespace solver {
         ans.coefficient = help;
 return ans;
     }
-
-
-
-    RealVariable operator/(const RealVariable &c1, const RealVariable &c2) {
-        return RealVariable();
+    RealVariable operator/(const RealVariable &c1, const double c2)
+    {
+        RealVariable ans;
+        ans.MP=c1.MP/c2;
+        ans.coefficient=c1.coefficient/c2;
+        if(c1.pow2!= nullptr) ans.pow2->coefficient=c1.pow2->coefficient/c2;
+        return ans;
     }
-
-
-
-
-
     RealVariable operator*(const RealVariable &c1, const RealVariable &c2) {
         RealVariable ans,ans2;
         double help;//מקדם X
@@ -312,13 +310,11 @@ if((c1.pow2!= nullptr&&c2.pow2!= nullptr)||(c1.pow2!= nullptr&&c2.power==1)||(c2
             ans.pow2=&ans2;
         }
     }
-
     RealVariable operator==(const RealVariable &c1, const double c2)
     {
 
        return operator-(c1,c2);
     }
-
     RealVariable operator==(const RealVariable &c1, const RealVariable &c2)
     {
         return operator-(c1,c2);
