@@ -13,7 +13,7 @@ namespace solver{
         double MP;
         double coefficient;
         int power;
-        RealVariable *pow2;
+        double pow2;
 
 
         //constractors
@@ -22,6 +22,7 @@ namespace solver{
         RealVariable(RealVariable const &other);
 
         //operators
+        friend RealVariable operator==(const double &c1, const RealVariable &c2);
         friend RealVariable operator==(const RealVariable& c1, const RealVariable& c2);
         friend RealVariable operator==(const RealVariable& c1, const double c2);
         friend RealVariable operator^(const RealVariable& c1, const int c2);

@@ -2,6 +2,7 @@
 // Created by avichai on 4/24/20.
 //
 #include <iostream>
+#include <math.h>
 #include "solver.hpp"
 //using namespace std;
 
@@ -15,14 +16,14 @@ namespace solver {
         MP=0.0;
         coefficient=1.0;
         power=1;
-        pow2= nullptr;
+        pow2= 0;
     }
     RealVariable::RealVariable(double realNum)
     {
         this->MP=realNum;
         coefficient=1.0;
         power=1;
-        pow2= nullptr;
+        pow2= 0;
     }
     RealVariable::RealVariable(RealVariable const &other)
     {
@@ -36,24 +37,42 @@ namespace solver {
 
     double solve(RealVariable x)
     {
-        if(x.pow2== nullptr) //אין חזקת 2
+        double ans=0;
+        if(x.pow2== 0) //אין חזקת 2
         {
             if (x.coefficient == 0 && x.MP != 0) throw invalid_argument("wrong");
             else if ((x.coefficient == 0 && x.MP == 0)||(x.coefficient == 1 && x.MP == 0)) return 0;
             else if (x.coefficient == 1 && x.MP != 0) return -x.MP;
-            else return (-x.MP)/x.coefficient;
+            else {
+                ans=(-x.MP)/x.coefficient;
+                ans=ans*10000; //שיחזיר 4 ספרות אחרי הנקודה
+                int help=(int)(ans);
+                ans=(double)help/10000;
+                return ans;
+            }
 
-        }else if( (x.coefficient==0&&x.pow2!= nullptr))
+        }else if( (x.coefficient==0&&x.pow2!= 0))
         {
-            if(x.MP<0)
-            return sqrt(-x.MP);
+            double save=-x.MP/x.pow2;
+            if(save>0){
+                ans=sqrt(save);
+                ans=ans*10000; //שיחזיר 4 ספרות אחרי הנקודה
+                int help=(int)(ans);
+                ans=(double)help/10000;
+                return ans;
+
+            }
             throw invalid_argument("There is no real solution");
         }
 
         else{//נוסחת שורשים
-            double sq=x.coefficient*x.coefficient-4*x.pow2->coefficient*x.MP;
+            double sq=x.coefficient*x.coefficient-4*x.pow2*x.MP;
             if (sq<0) throw invalid_argument("There is no real solution");
-            return (-x.coefficient+sqrt(sq))/2*x.pow2->coefficient;
+            ans=(-x.coefficient+sqrt(sq))/(2*x.pow2);
+            ans=ans*10000; //שיחזיר 4 ספרות אחרי הנקודה
+            int help=(int)(ans);
+            ans=(double)help/10000;
+            return ans;
         }
 
     }
@@ -70,70 +89,60 @@ namespace solver {
             ans.power=c2.power;
             ans.MP=c1.MP+c2.MP;
             ans.coefficient=c1.coefficient+c2.coefficient;
-            if (c1.pow2!=nullptr &&c2.pow2!= nullptr)
+            if (c1.pow2!=0 &&c2.pow2!= 0)
             {
-                RealVariable ans2;
-                ans2.power=c2.pow2->power;
-                ans2.MP=c1.pow2->MP+c2.pow2->MP;
-                ans2.coefficient=c1.pow2->coefficient+c2.pow2->coefficient;
-                ans.pow2=&ans2;
+                ans.pow2=c1.pow2+c2.pow2;
             }
-            else if(c1.pow2!=nullptr){
+            else if(c1.pow2!=0){
                 ans.pow2=c1.pow2;
             }
-            else if(c2.pow2!=nullptr){
+            else if(c2.pow2!=0){
                 ans.pow2=c2.pow2;
             }
         } else if(c1.power==1&&c2.power==0){
             ans=operator+(c1,c2.coefficient);
             ans.MP=ans.MP+c2.MP;
-            if (c1.pow2!=nullptr &&c2.pow2!= nullptr)
+            if (c1.pow2!=0 &&c2.pow2!= 0)
             {
-                RealVariable ans2;
-                ans2.power=c2.pow2->power;
-                ans2.MP=c1.pow2->MP+c2.pow2->MP;
-                ans2.coefficient=c1.pow2->coefficient+c2.pow2->coefficient;
-                ans.pow2=&ans2;
+
+                ans.MP=c1.MP+c2.MP;
+                ans.coefficient=c1.pow2+c2.pow2;
+
             }
-            else if(c1.pow2!=nullptr){
+            else if(c1.pow2!=0){
                 ans.pow2=c1.pow2;
             }
-            else if(c2.pow2!=nullptr){
+            else if(c2.pow2!=0){
                 ans.pow2=c2.pow2;
             }
         }
         else if(c1.power==0&&c2.power==1){
             ans=operator+(c1.coefficient,c2);
             ans.MP=ans.MP+c1.MP;
-            if (c1.pow2!=nullptr &&c2.pow2!= nullptr)
+            if (c1.pow2!=0 &&c2.pow2!= 0)
             {
-                RealVariable ans2;
-                ans2.power=c2.pow2->power;
-                ans2.MP=c1.pow2->MP+c2.pow2->MP;
-                ans2.coefficient=c1.pow2->coefficient+c2.pow2->coefficient;
-                ans.pow2=&ans2;
+                ans.MP=c1.MP+c2.MP;
+                ans.coefficient=c1.pow2+c2.pow2;
             }
-            else if(c1.pow2!=nullptr){
+            else if(c1.pow2!=0){
                 ans.pow2=c1.pow2;
             }
-            else if(c2.pow2!=nullptr){
+            else if(c2.pow2!=0){
                 ans.pow2=c2.pow2;
             }
         }
         else{ //חזקות שוות 0
             ans.MP=c1.coefficient+c2.coefficient+c1.MP+c2.MP;
-            if (c1.pow2!=nullptr &&c2.pow2!= nullptr)
+            ans.coefficient=0;
+            ans.power=0;
+            if (c1.pow2!=0 &&c2.pow2!= 0)
             {
-                RealVariable ans2;
-                ans2.power=c2.pow2->power;
-                ans2.MP=c1.pow2->MP+c2.pow2->MP;
-                ans2.coefficient=c1.pow2->coefficient+c2.pow2->coefficient;
-                ans.pow2=&ans2;
+                ans.pow2=c1.pow2+c2.pow2;
             }
-            else if(c1.pow2!=nullptr){
+            else if(c1.pow2!=0){
                 ans.pow2=c1.pow2;
             }
-            else if(c2.pow2!=nullptr){
+            else if(c2.pow2!=0){
                 ans.pow2=c2.pow2;
             }
         }
@@ -149,70 +158,59 @@ namespace solver {
             ans.power=c2.power;
             ans.MP=c1.MP-c2.MP;
             ans.coefficient=c1.coefficient-c2.coefficient;
-            if (c1.pow2!=nullptr &&c2.pow2!= nullptr) //בדיקה אם קיים חזקת 2
+            if (c1.pow2!=0 &&c2.pow2!= 0) //בדיקה אם קיים חזקת 2
             {
-                RealVariable ans2;
-                ans2.power=c2.pow2->power;
-                ans2.MP=c1.pow2->MP-c2.pow2->MP;
-                ans2.coefficient=c1.pow2->coefficient-c2.pow2->coefficient;
-                ans.pow2=&ans2;
+                ans.MP=c1.MP-c2.MP;
+                ans.pow2=c1.pow2-c2.pow2;
             }
-            else if(c1.pow2!=nullptr){
+            else if(c1.pow2!=0){
                 ans.pow2=c1.pow2;
             }
-            else if(c2.pow2!=nullptr){
+            else if(c2.pow2!=0){
                 ans.pow2=c2.pow2;
             }
         } else if(c1.power==1&&c2.power==0){
             ans=operator-(c1,c2.coefficient);
             ans.MP=ans.MP-c2.MP;
-            if (c1.pow2!=nullptr &&c2.pow2!= nullptr)
+            if (c1.pow2!=0 &&c2.pow2!= 0)
             {
                 RealVariable ans2;
-                ans2.power=c2.pow2->power;
-                ans2.MP=c1.pow2->MP-c2.pow2->MP;
-                ans2.coefficient=c1.pow2->coefficient-c2.pow2->coefficient;
-                ans.pow2=&ans2;
+                ans.MP=c1.MP-c2.MP;
+                ans.pow2=c1.pow2-c2.pow2;
             }
-            else if(c1.pow2!=nullptr){
+            else if(c1.pow2!=0){
                 ans.pow2=c1.pow2;
             }
-            else if(c2.pow2!=nullptr){
+            else if(c2.pow2!=0){
                 ans.pow2=c2.pow2;
             }
         }
         else if(c1.power==0&&c2.power==1){
             ans=operator-(c1.coefficient,c2);
             ans.MP=ans.MP-c1.MP;
-            if (c1.pow2!=nullptr &&c2.pow2!= nullptr)
+            if (c1.pow2!=0 &&c2.pow2!= 0)
             {
-                RealVariable ans2;
-                ans2.power=c2.pow2->power;
-                ans2.MP=c1.pow2->MP-c2.pow2->MP;
-                ans2.coefficient=c1.pow2->coefficient-c2.pow2->coefficient;
-                ans.pow2=&ans2;
+                ans.MP=c1.MP-c2.MP;
+                ans.pow2=c1.pow2-c2.pow2;
             }
-            else if(c1.pow2!=nullptr){
+            else if(c1.pow2!=0){
                 ans.pow2=c1.pow2;
             }
-            else if(c2.pow2!=nullptr){
+            else if(c2.pow2!=0){
                 ans.pow2=c2.pow2;
             }
         }
         else{ //חזקות שוות 0
             ans.MP=c1.coefficient-c2.coefficient-c1.MP-c2.MP;
-            if (c1.pow2!=nullptr &&c2.pow2!= nullptr)
+            if (c1.pow2!=0 &&c2.pow2!= 0)
             {
-                RealVariable ans2;
-                ans2.power=c2.pow2->power;
-                ans2.MP=c1.pow2->MP-c2.pow2->MP;
-                ans2.coefficient=c1.pow2->coefficient-c2.pow2->coefficient;
-                ans.pow2=&ans2;
+                ans.MP=c1.MP-c2.MP;
+                ans.pow2=c1.pow2-c2.pow2;
             }
-            else if(c1.pow2!=nullptr){
+            else if(c1.pow2!=0){
                 ans.pow2=c1.pow2;
             }
-            else if(c2.pow2!=nullptr){
+            else if(c2.pow2!=0){
                 ans.pow2=c2.pow2;
             }
         }
@@ -221,9 +219,9 @@ namespace solver {
     RealVariable operator-(const double c1, const RealVariable &c2)
     {
         RealVariable ans(c2);
-        if(c2.pow2!= nullptr)
+        if(c2.pow2!= 0)
         {
-           ans.pow2->coefficient=-c2.pow2->coefficient;
+           ans.pow2=-c2.pow2;
         }
 
         ans.coefficient=-c2.coefficient;
@@ -246,21 +244,19 @@ namespace solver {
         ans.MP=c1.MP-c2;
         return ans;
     }
-    RealVariable operator*(const double c2,const RealVariable &c1)
+    RealVariable operator*(const double c1,const RealVariable &c2)
     {
-        return operator*(c1,c2);
+        return operator*(c2,c1);
     }
     RealVariable operator*(const RealVariable &c1, const double c2)
     {
         RealVariable ans2;
-        ans2.coefficient=c1.coefficient*c2;
+        if (c1.coefficient!=0) ans2.coefficient=c1.coefficient*c2;
         ans2.power=c1.power;
-        ans2.MP=c1.MP*c2;
-        if(c1.pow2!= nullptr)
+        if (c1.MP!=0) ans2.MP=c1.MP*c2;
+        if(c1.pow2!= 0)
         {
-            RealVariable ans(*c1.pow2);
-            ans.pow2->coefficient=c1.pow2->coefficient*c2;
-            ans2.pow2=&ans;
+            ans2.pow2=c1.pow2*c2;
         }
         return ans2;
 
@@ -268,46 +264,51 @@ namespace solver {
     RealVariable operator^(const RealVariable &c1, const int c2)
     {
         if(c2>2||c2<0) throw ("can not be less then 0 or big from 2");
-        if(c1.pow2!= nullptr&&c2>1) throw ("power can not be big from 2");
+        if(c1.pow2!= 0&&c2>1) throw ("power can not be big from 2");
+if(c1.pow2== 0&&c2==2&&c1.MP==0)
+{
+    RealVariable ans;
+    ans.coefficient=0;
+    ans.power=0;
+    ans.MP=0;
+    ans.pow2=pow(c1.coefficient,2);
+    return ans;
+}
+   else {
+    RealVariable ans, ans2;
+    double help = 1;//חישוב אמצע מקדם X
 
-        RealVariable ans,ans2;
-        double help=1;//חישוב אמצע מקדם X
+    ans.pow2= pow(c1.coefficient, c2);
 
+    help = c1.coefficient * c1.MP * 2;
 
-    ans2.power = 2;
-    ans2.coefficient = pow(c1.coefficient, c2);
-    ans.pow2 = &ans2;
-
-        help = c1.coefficient * c1.MP * 2;
-
-        ans.power = c1.power;
-        ans.MP = pow(c1.MP, c2);
-        ans.coefficient = help;
-return ans;
+    ans.power = c1.power;
+    ans.MP = pow(c1.MP, c2);
+    ans.coefficient = help;
+    return ans;
+}
     }
     RealVariable operator/(const RealVariable &c1, const double c2)
     {
         RealVariable ans;
         ans.MP=c1.MP/c2;
         ans.coefficient=c1.coefficient/c2;
-        if(c1.pow2!= nullptr) ans.pow2->coefficient=c1.pow2->coefficient/c2;
+        if(c1.pow2!= 0) ans.pow2=c1.pow2/c2;
         return ans;
     }
     RealVariable operator*(const RealVariable &c1, const RealVariable &c2) {
-        RealVariable ans,ans2;
+        RealVariable ans;
         double help;//מקדם X
-if((c1.pow2!= nullptr&&c2.pow2!= nullptr)||(c1.pow2!= nullptr&&c2.power==1)||(c2.pow2!= nullptr&&c1.power==1))throw invalid_argument("can not do ^>2");
+if((c1.pow2!= 0&&c2.pow2!= 0)||(c1.pow2!= 0&&c2.power==1)||(c2.pow2!= 0&&c1.power==1))throw invalid_argument("can not do ^>2");
         if(c1.power==c2.power==1)
         {
-            ans2.power=2;
-            ans2.coefficient=c1.coefficient*c2.coefficient;
 
             help=c1.coefficient*c2.MP+c2.coefficient*c1.MP;
 
             ans.power=c2.power;
             ans.MP=c1.MP*c2.MP;
             ans.coefficient=help;
-            ans.pow2=&ans2;
+            ans.pow2=c1.coefficient*c2.coefficient;
         }
     }
     RealVariable operator==(const RealVariable &c1, const double c2)
@@ -318,6 +319,11 @@ if((c1.pow2!= nullptr&&c2.pow2!= nullptr)||(c1.pow2!= nullptr&&c2.power==1)||(c2
     RealVariable operator==(const RealVariable &c1, const RealVariable &c2)
     {
         return operator-(c1,c2);
+    }
+    RealVariable operator==(const double &c1, const RealVariable &c2)
+    {
+        RealVariable ans=operator*(c2,-1);
+        return operator==(ans,-c1);
     }
 
 
