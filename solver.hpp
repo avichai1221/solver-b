@@ -47,27 +47,35 @@ namespace solver{
 
 
     class ComplexVariable {
-
-    private:
-        double realNum;
-        double imagNum;
-
     public:
+   // private:
+        complex<double> pow2;
+        complex<double> coefficient;
+        complex<double> MP;
+
+
         //constractors
+
         ComplexVariable();
         ComplexVariable(double realNum,double imagNum);
+        ComplexVariable(ComplexVariable &other);
+        ComplexVariable(complex<double> pow2, complex<double> coefficient,complex<double> MP);
+        ComplexVariable(double pow2Real,double pow2Imag,double coefficientReal,double coefficientImag,double PMReal,double PMmag);
 
 
         //operators
         friend ComplexVariable operator* (const double& c2 ,ComplexVariable& c1);
-        friend ComplexVariable operator- (const ComplexVariable& c1, const RealVariable& c2);
+        friend ComplexVariable operator- (const ComplexVariable& c1, const double& c2);
+        friend ComplexVariable operator- (const double& c1,const ComplexVariable& c2);
+        friend ComplexVariable operator -(const ComplexVariable &c1, complex<double>c2);
         friend ComplexVariable operator- (const ComplexVariable& c1, const ComplexVariable& c2);
         friend ComplexVariable operator==(const ComplexVariable& c1, const RealVariable& c2);
         friend ComplexVariable operator==(const ComplexVariable& c1, const ComplexVariable& c2);
         friend ComplexVariable operator^(const ComplexVariable& c1, const double& c2);
         friend ComplexVariable operator/(const ComplexVariable& c1,const RealVariable& c2 ) ;
         friend ComplexVariable operator +(const ComplexVariable &c1, const ComplexVariable &c2);
-        friend ComplexVariable operator +(const int c1, const ComplexVariable &c2);
+        friend ComplexVariable operator +(const double c1, const ComplexVariable &c2);
+        friend ComplexVariable operator+(const ComplexVariable &c1, const double c2);
         friend ComplexVariable operator +(const ComplexVariable &c1, complex<double>c2);
 
     };

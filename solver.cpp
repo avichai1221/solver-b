@@ -333,14 +333,47 @@ if((c1.pow2!= 0&&c2.pow2!= 0)||(c1.pow2!= 0&&c2.power==1)||(c2.pow2!= 0&&c1.powe
 
 
     //constractors
-    ComplexVariable::ComplexVariable() {
-        this->realNum=0.0;
-        this->imagNum=0.0;
+    ComplexVariable::ComplexVariable()
+    {
+        this->pow2.real(0);
+        this->pow2.imag(0);
+        this->coefficient.real(1);
+        this->coefficient.imag(1);
+        this->MP.real(0);
+        this->MP.imag(0);
+
+
     }
 
-    ComplexVariable::ComplexVariable(double realNum,double imagNum ) {
-        this->realNum=realNum;
-        this->imagNum=imagNum;
+    ComplexVariable::ComplexVariable(double realNum,double imagNum )
+    {
+        this->pow2.real(0);
+        this->pow2.imag(0);
+        this->coefficient.real(realNum);
+        this->coefficient.imag(imagNum);
+        this->MP.real(0);
+        this->MP.imag(0);
+    }
+    ComplexVariable::ComplexVariable(ComplexVariable &other)
+    {
+        this->pow2=other.pow2;
+        this->coefficient=other.coefficient;
+        this->MP=other.MP;
+    }
+    ComplexVariable::ComplexVariable(complex<double> pow2, complex<double> coefficient, complex<double> MP) {
+        this->pow2=pow2;
+        this->coefficient=coefficient;
+        this->MP=MP;
+    }
+
+    ComplexVariable::ComplexVariable(double pow2Real,double pow2Imag,double coefficientReal,double coefficientImag,double PMReal,double PMmag)
+    {
+        this->pow2.real(pow2Real);
+        this->pow2.imag(pow2Imag);
+        this->coefficient.real(coefficientReal);
+        this->coefficient.imag(coefficientImag);
+        this->MP.real(PMReal);
+        this->MP.imag(PMmag);
     }
 
 ///////////////////////////////////////////////////////////////////////
@@ -351,14 +384,53 @@ if((c1.pow2!= 0&&c2.pow2!= 0)||(c1.pow2!= 0&&c2.power==1)||(c2.pow2!= 0&&c1.powe
 ///////////////////////////////////////////////////////////////////////
 
     //operators
+
+    ComplexVariable operator-(const ComplexVariable &c1, const double &c2)
+    {
+        ComplexVariable ans(c1.pow2,c1.coefficient,c1.MP-c2);
+        return ans;
+    }
+    ComplexVariable operator-( const double &c1,const ComplexVariable &c2)
+    {
+        ComplexVariable ans(-c2.pow2,-c2.coefficient,-c2.MP+c1);
+        return ans;
+    }
+    ComplexVariable operator-(const ComplexVariable &c1, const ComplexVariable &c2)
+    {
+        ComplexVariable ans(c1.pow2-c2.pow2,c1.coefficient-c2.coefficient,c1.MP-c2.MP);
+        return ans;
+    }
+    ComplexVariable operator-(const ComplexVariable &c1, complex<double> c2)
+    {
+        { //מנקודת הנחה שמחברים את ה 2Xi
+            ComplexVariable ans(c1.pow2,c1.coefficient-c2,c1.MP);
+            return ans;
+        }
+    }
+    ComplexVariable operator+(const ComplexVariable &c1, const ComplexVariable &c2)
+    {
+        ComplexVariable ans(c1.pow2+c2.pow2,c1.coefficient+c2.coefficient,c1.MP+c2.MP);
+        return ans;
+    }
+    ComplexVariable operator+(const ComplexVariable &c1, complex<double> c2)
+    { //מנקודת הנחה שמחברים את ה 2Xi
+        ComplexVariable ans(c1.pow2,c1.coefficient+c2,c1.MP);
+        return ans;
+    }
+    ComplexVariable operator+(const double c1, const ComplexVariable &c2)
+    {
+        ComplexVariable ans(c2.pow2,c2.coefficient,c2.MP+c1);
+        return ans;
+    }
+    ComplexVariable operator+(const ComplexVariable &c1, const double c2)
+    {
+        return operator+(c2,c1);
+    }
     ComplexVariable operator*(const double &c2, ComplexVariable &c1) {
         return ComplexVariable();
     }
 
-    ComplexVariable operator-(const ComplexVariable &c1, const RealVariable &c2) {
-        return ComplexVariable();
-    }
-    ComplexVariable operator-(const ComplexVariable &c1, const ComplexVariable &c2) {
+    ComplexVariable operator==(const ComplexVariable &c1, const ComplexVariable &c2) {
         return ComplexVariable();
     }
     ComplexVariable operator==(const ComplexVariable &c1, const RealVariable &c2) {
@@ -372,24 +444,6 @@ if((c1.pow2!= 0&&c2.pow2!= 0)||(c1.pow2!= 0&&c2.power==1)||(c2.pow2!= 0&&c1.powe
     ComplexVariable operator/(const ComplexVariable &c1, const RealVariable &c2) {
         return ComplexVariable();
     }
-
-    ComplexVariable operator+(const ComplexVariable &c1, const ComplexVariable &c2) {
-        return ComplexVariable();
-    }
-
-    ComplexVariable operator+(const ComplexVariable &c1, complex<double> c2) {
-        return ComplexVariable();
-    }
-
-    ComplexVariable operator+(const int c1, const ComplexVariable &c2) {
-        return ComplexVariable();
-    }
-
-    ComplexVariable operator==(const ComplexVariable &c1, const ComplexVariable &c2) {
-        return ComplexVariable();
-    }
-
-
 
 
 
