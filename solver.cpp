@@ -295,6 +295,7 @@ if(c1.pow2== 0&&c2==2&&c1.MP==0)
     RealVariable operator/(const RealVariable &c1, const double c2)
     {
         RealVariable ans;
+        if(c2==0) throw ("can not divid by 0" );
         ans.MP=c1.MP/c2;
         ans.coefficient=c1.coefficient/c2;
         if(c1.pow2!= 0) ans.pow2=c1.pow2/c2;
