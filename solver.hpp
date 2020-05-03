@@ -64,15 +64,17 @@ namespace solver{
 
 
         //operators
-        friend ComplexVariable operator* (const double& c2 ,ComplexVariable& c1);
+        friend ComplexVariable operator* (const double c1 ,const ComplexVariable& c2);
+        friend ComplexVariable operator* (const ComplexVariable& c1,const double c2);
+        friend ComplexVariable operator* (ComplexVariable& c1,ComplexVariable& c2);
         friend ComplexVariable operator- (const ComplexVariable& c1, const double& c2);
         friend ComplexVariable operator- (const double& c1,const ComplexVariable& c2);
         friend ComplexVariable operator -(const ComplexVariable &c1, complex<double>c2);
         friend ComplexVariable operator- (const ComplexVariable& c1, const ComplexVariable& c2);
-        friend ComplexVariable operator==(const ComplexVariable& c1, const RealVariable& c2);
+        friend ComplexVariable operator==(const ComplexVariable& c1, const double & c2);
         friend ComplexVariable operator==(const ComplexVariable& c1, const ComplexVariable& c2);
         friend ComplexVariable operator^(const ComplexVariable& c1, const double& c2);
-        friend ComplexVariable operator/(const ComplexVariable& c1,const RealVariable& c2 ) ;
+        friend ComplexVariable operator/(const ComplexVariable& c1,const double & c2 ) ;
         friend ComplexVariable operator +(const ComplexVariable &c1, const ComplexVariable &c2);
         friend ComplexVariable operator +(const double c1, const ComplexVariable &c2);
         friend ComplexVariable operator+(const ComplexVariable &c1, const double c2);
